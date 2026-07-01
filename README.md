@@ -33,5 +33,4 @@ stockage local SQLite (historique et favoris), formulaires validés avec Joi.
 
 ## Documentation complémentaire
 
-- [`docs/security.md`](docs/security.md) : validation des formulaires (Joi) et protections mises en place
-- [`docs/data-management.md`](docs/data-management.md) : rôle de Firebase (identité) vs SQLite (données locales)
+- [`docs/documentation.md`](docs/documentation.md) : architecture, sécurité, gestion des données
