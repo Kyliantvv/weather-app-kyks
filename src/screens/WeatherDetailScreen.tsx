@@ -2,8 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ActivityIndicator, Button, Text } from 'react-native-paper';
 import { useRoute, type RouteProp } from '@react-navigation/native';
-import { getWeatherDetails, type WeatherDetails } from '../services/weatherService';
+import { getWeatherDetails, getForecast, type WeatherDetails, type ForecastEntry } from '../services/weatherService';
 import { addFavorite, isFavorite, removeFavorite } from '../services/db';
+import { syncNow } from '../services/syncService';
+import { WeatherChart } from '../components/WeatherChart';
 import type { DashboardStackParamList } from '../navigation/AppTabs';
 
 type WeatherDetailRouteProp = RouteProp<DashboardStackParamList, 'WeatherDetail'>;
@@ -12,6 +14,7 @@ export function WeatherDetailScreen() {
   const route = useRoute<WeatherDetailRouteProp>();
   const { city } = route.params;
   const [details, setDetails] = useState<WeatherDetails | null>(null);
+  const [forecast, setForecast] = useState<ForecastEntry[]>([]);
   const [favorite, setFavorite] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,6 +28,15 @@ export function WeatherDetailScreen() {
       setFavorite(favoriteState);
     } catch (err) {
       setError((err as Error).message);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const entries = await getForecast(city);
+      setForecast(entries.slice(0, 8));
+    } catch {
+      setForecast([]);
     } finally {
       setIsLoading(false);
     }
@@ -43,6 +55,7 @@ export function WeatherDetailScreen() {
       await addFavorite(details.city, details.country, new Date().toISOString());
       setFavorite(true);
     }
+    syncNow().catch(() => {});
   }
 
   if (isLoading) {
@@ -72,6 +85,7 @@ export function WeatherDetailScreen() {
       <Button mode={favorite ? 'contained' : 'outlined'} onPress={toggleFavorite}>
         {favorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
       </Button>
+      <WeatherChart entries={forecast} />
     </View>
   );
 }

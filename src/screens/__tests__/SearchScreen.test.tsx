@@ -7,6 +7,10 @@ jest.mock('../../services/db', () => ({
   getHistory: jest.fn(),
 }));
 
+jest.mock('../../services/syncService', () => ({
+  syncNow: jest.fn().mockResolvedValue(undefined),
+}));
+
 import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';

@@ -6,6 +6,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { validate, searchCitySchema } from '../validation/schemas';
 import { searchCity, type WeatherSummary } from '../services/weatherService';
 import { addToHistory, getHistory, type HistoryEntry } from '../services/db';
+import { syncNow } from '../services/syncService';
 import type { SearchStackParamList } from '../navigation/AppTabs';
 
 export function SearchScreen() {
@@ -40,6 +41,7 @@ export function SearchScreen() {
       setResult(summary);
       await addToHistory(summary.city, summary.country, new Date().toISOString());
       await loadHistory();
+      syncNow().catch(() => {});
     } catch (err) {
       setSearchError((err as Error).message);
     } finally {

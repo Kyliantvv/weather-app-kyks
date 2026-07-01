@@ -2,6 +2,19 @@ jest.mock('../../context/AuthContext', () => ({
   useAuth: jest.fn(),
 }));
 
+jest.mock('../../context/ThemeContext', () => ({
+  useThemeMode: jest.fn().mockReturnValue({ isDarkMode: false, toggleDarkMode: jest.fn() }),
+}));
+
+jest.mock('../../services/syncService', () => ({
+  syncNow: jest.fn().mockResolvedValue(undefined),
+  mergeFromCloud: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('../../services/locationService', () => ({
+  getCurrentCoordinates: jest.fn().mockResolvedValue(null),
+}));
+
 // RootNavigator's own render logic never touches these, but AppTabs mounts
 // DashboardScreen/SearchScreen which, from Task 11/12 onward, call these
 // services on mount. Mocking them here keeps this test isolated from later

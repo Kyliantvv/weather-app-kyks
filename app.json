@@ -9,7 +9,10 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Cette application utilise votre position pour afficher la météo de votre ville actuelle."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -17,7 +20,13 @@
       }
     },
     "plugins": [
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Cette application utilise votre position pour afficher la météo de votre ville actuelle."
+        }
+      ]
     ]
   }
 }

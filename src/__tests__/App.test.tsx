@@ -13,6 +13,10 @@ jest.mock('../services/db', () => ({
   initDb: jest.fn().mockResolvedValue(undefined),
 }));
 
+jest.mock('../services/syncService', () => ({
+  mergeFromCloud: jest.fn().mockResolvedValue(undefined),
+}));
+
 import { render, screen, waitFor } from '@testing-library/react-native';
 import App from '../../App';
 

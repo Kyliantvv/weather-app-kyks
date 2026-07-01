@@ -1,5 +1,6 @@
 jest.mock('../../services/weatherService', () => ({
   getWeatherDetails: jest.fn(),
+  getForecast: jest.fn(),
 }));
 
 jest.mock('../../services/db', () => ({
@@ -8,11 +9,15 @@ jest.mock('../../services/db', () => ({
   isFavorite: jest.fn(),
 }));
 
+jest.mock('../../services/syncService', () => ({
+  syncNow: jest.fn().mockResolvedValue(undefined),
+}));
+
 import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { WeatherDetailScreen } from '../WeatherDetailScreen';
-import { getWeatherDetails } from '../../services/weatherService';
+import { getWeatherDetails, getForecast } from '../../services/weatherService';
 import { addFavorite, removeFavorite, isFavorite } from '../../services/db';
 
 const Stack = createNativeStackNavigator();
@@ -28,6 +33,10 @@ function renderDetail() {
 }
 
 describe('WeatherDetailScreen', () => {
+  beforeEach(() => {
+    (getForecast as jest.Mock).mockResolvedValue([]);
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -51,6 +60,46 @@ describe('WeatherDetailScreen', () => {
     expect(screen.getByText('Humidité : 55%')).toBeTruthy();
     expect(screen.getByText('Vent : 12 km/h')).toBeTruthy();
     expect(screen.getByText('Ajouter aux favoris')).toBeTruthy();
+  });
+
+  it('shows the forecast chart when the forecast loads successfully', async () => {
+    (getWeatherDetails as jest.Mock).mockResolvedValue({
+      cityId: 1,
+      city: 'Paris',
+      country: 'FR',
+      temperatureCelsius: 21,
+      condition: 'ciel dégagé',
+      humidityPercent: 55,
+      windSpeedKmh: 12,
+    });
+    (isFavorite as jest.Mock).mockResolvedValue(false);
+    (getForecast as jest.Mock).mockResolvedValue([
+      { timestamp: new Date('2026-07-01T12:00:00.000Z').getTime(), temperatureCelsius: 20 },
+      { timestamp: new Date('2026-07-01T15:00:00.000Z').getTime(), temperatureCelsius: 23 },
+    ]);
+
+    renderDetail();
+
+    expect(await screen.findByTestId('weather-chart')).toBeTruthy();
+  });
+
+  it('does not show a chart or crash when the forecast fails to load', async () => {
+    (getWeatherDetails as jest.Mock).mockResolvedValue({
+      cityId: 1,
+      city: 'Paris',
+      country: 'FR',
+      temperatureCelsius: 21,
+      condition: 'ciel dégagé',
+      humidityPercent: 55,
+      windSpeedKmh: 12,
+    });
+    (isFavorite as jest.Mock).mockResolvedValue(false);
+    (getForecast as jest.Mock).mockRejectedValue(new Error('network'));
+
+    renderDetail();
+
+    expect(await screen.findByText('Paris')).toBeTruthy();
+    expect(screen.queryByTestId('weather-chart')).toBeNull();
   });
 
   it('adds the city to favorites when the button is pressed', async () => {
