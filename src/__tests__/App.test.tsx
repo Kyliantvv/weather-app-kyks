@@ -21,7 +21,7 @@ import { render, screen, waitFor } from '@testing-library/react-native';
 import App from '../../App';
 
 test('renders the login screen when no user is authenticated', async () => {
-  render(<App />);
+  await render(<App />);
 
   await waitFor(() => expect(screen.getByText('Connexion')).toBeTruthy());
 });

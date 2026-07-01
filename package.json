@@ -12,32 +12,46 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@expo/metro-runtime": "~4.0.1",
-    "@react-native-async-storage/async-storage": "1.23.1",
+    "@expo/metro-runtime": "~57.0.2",
+    "@expo/vector-icons": "^15.0.2",
+    "@react-native-async-storage/async-storage": "2.2.0",
     "@react-navigation/bottom-tabs": "^7.18.4",
     "@react-navigation/native": "^7.3.5",
     "@react-navigation/native-stack": "^7.17.7",
-    "expo": "~52.0.11",
-    "expo-location": "~18.0.10",
-    "expo-sqlite": "~15.1.4",
-    "expo-status-bar": "~2.0.0",
+    "expo": "^57.0.0",
+    "expo-font": "~57.0.0",
+    "expo-linear-gradient": "~57.0.0",
+    "expo-location": "~57.0.1",
+    "expo-sqlite": "~57.0.0",
+    "expo-status-bar": "~57.0.0",
     "firebase": "^12.15.0",
     "joi": "^18.2.3",
-    "react": "18.3.1",
-    "react-native": "0.76.3",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.85.3",
     "react-native-paper": "^5.15.3",
-    "react-native-safe-area-context": "4.12.0",
-    "react-native-screens": "~4.4.0",
-    "react-native-web": "~0.19.13"
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "4.25.2",
+    "react-native-web": "^0.21.2"
+  },
+  "expo": {
+    "install": {
+      "exclude": [
+        "react",
+        "react-dom",
+        "react-native"
+      ]
+    }
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
-    "@testing-library/react-native": "^12.7.2",
+    "@testing-library/react-native": "^14.0.1",
     "@types/jest": "^29.5.13",
-    "@types/react": "~18.3.12",
-    "babel-preset-expo": "~12.0.1",
+    "@types/node": "^26.1.0",
+    "@types/react": "~19.2.4",
+    "babel-preset-expo": "~57.0.0",
     "jest": "^29.7.0",
-    "jest-expo": "~52.0.2",
-    "typescript": "~5.3.3"
+    "jest-expo": "~57.0.0",
+    "typescript": "~6.0.3"
   }
 }

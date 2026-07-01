@@ -22,7 +22,7 @@ import { addFavorite, removeFavorite, isFavorite } from '../../services/db';
 
 const Stack = createNativeStackNavigator();
 
-function renderDetail() {
+async function renderDetail() {
   return render(
     <NavigationContainer>
       <Stack.Navigator initialRouteName="WeatherDetail">
@@ -53,7 +53,7 @@ describe('WeatherDetailScreen', () => {
     });
     (isFavorite as jest.Mock).mockResolvedValue(false);
 
-    renderDetail();
+    await renderDetail();
 
     expect(await screen.findByText('Paris')).toBeTruthy();
     expect(screen.getByText('21°C')).toBeTruthy();
@@ -78,7 +78,7 @@ describe('WeatherDetailScreen', () => {
       { timestamp: new Date('2026-07-01T15:00:00.000Z').getTime(), temperatureCelsius: 23 },
     ]);
 
-    renderDetail();
+    await renderDetail();
 
     expect(await screen.findByTestId('weather-chart')).toBeTruthy();
   });
@@ -96,7 +96,7 @@ describe('WeatherDetailScreen', () => {
     (isFavorite as jest.Mock).mockResolvedValue(false);
     (getForecast as jest.Mock).mockRejectedValue(new Error('network'));
 
-    renderDetail();
+    await renderDetail();
 
     expect(await screen.findByText('Paris')).toBeTruthy();
     expect(screen.queryByTestId('weather-chart')).toBeNull();
@@ -115,10 +115,10 @@ describe('WeatherDetailScreen', () => {
     (isFavorite as jest.Mock).mockResolvedValue(false);
     (addFavorite as jest.Mock).mockResolvedValue(undefined);
 
-    renderDetail();
+    await renderDetail();
     await screen.findByText('Ajouter aux favoris');
 
-    fireEvent.press(screen.getByText('Ajouter aux favoris'));
+    await fireEvent.press(screen.getByText('Ajouter aux favoris'));
 
     await waitFor(() => expect(addFavorite).toHaveBeenCalledWith('Paris', 'FR', expect.any(String)));
     expect(await screen.findByText('Retirer des favoris')).toBeTruthy();
@@ -137,10 +137,10 @@ describe('WeatherDetailScreen', () => {
     (isFavorite as jest.Mock).mockResolvedValue(true);
     (removeFavorite as jest.Mock).mockResolvedValue(undefined);
 
-    renderDetail();
+    await renderDetail();
     await screen.findByText('Retirer des favoris');
 
-    fireEvent.press(screen.getByText('Retirer des favoris'));
+    await fireEvent.press(screen.getByText('Retirer des favoris'));
 
     await waitFor(() => expect(removeFavorite).toHaveBeenCalledWith('Paris'));
     expect(await screen.findByText('Ajouter aux favoris')).toBeTruthy();
@@ -150,7 +150,7 @@ describe('WeatherDetailScreen', () => {
     (getWeatherDetails as jest.Mock).mockRejectedValue(new Error('Ville introuvable : Paris'));
     (isFavorite as jest.Mock).mockResolvedValue(false);
 
-    renderDetail();
+    await renderDetail();
 
     expect(await screen.findByText('Ville introuvable : Paris')).toBeTruthy();
     expect(screen.getByText('Réessayer')).toBeTruthy();

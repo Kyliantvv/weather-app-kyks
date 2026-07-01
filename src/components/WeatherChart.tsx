@@ -1,6 +1,7 @@
 import { View, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
 import type { ForecastEntry } from '../services/weatherService';
+import { getParisHour } from '../utils/weatherVisuals';
 
 const CHART_HEIGHT = 100;
 
@@ -27,8 +28,7 @@ export function WeatherChart({ entries }: WeatherChartProps) {
         {entries.map((entry) => {
           const heightRatio = (entry.temperatureCelsius - minTemp) / range;
           const barHeight = Math.max(4, heightRatio * CHART_HEIGHT);
-          const date = new Date(entry.timestamp);
-          const label = `${date.getHours()}h`;
+          const label = `${getParisHour(new Date(entry.timestamp))}h`;
 
           return (
             <View key={entry.timestamp} style={styles.barColumn}>

@@ -10,7 +10,7 @@ import { useAuth } from '../../../context/AuthContext';
 
 const Stack = createNativeStackNavigator();
 
-function renderScreen() {
+async function renderScreen() {
   return render(
     <NavigationContainer>
       <Stack.Navigator>
@@ -32,10 +32,10 @@ describe('ForgotPasswordScreen', () => {
   });
 
   it('shows a validation error for an invalid email and does not call resetPassword', async () => {
-    renderScreen();
+    await renderScreen();
 
-    fireEvent.changeText(screen.getByTestId('forgot-password-email'), 'not-an-email');
-    fireEvent.press(screen.getByText('Réinitialiser le mot de passe'));
+    await fireEvent.changeText(screen.getByTestId('forgot-password-email'), 'not-an-email');
+    await fireEvent.press(screen.getByText('Réinitialiser le mot de passe'));
 
     expect(await screen.findByText("L'adresse email n'est pas valide")).toBeTruthy();
     expect(resetPassword).not.toHaveBeenCalled();
@@ -43,20 +43,20 @@ describe('ForgotPasswordScreen', () => {
 
   it('shows a confirmation message once resetPassword succeeds', async () => {
     resetPassword.mockResolvedValue(undefined);
-    renderScreen();
+    await renderScreen();
 
-    fireEvent.changeText(screen.getByTestId('forgot-password-email'), 'user@example.com');
-    fireEvent.press(screen.getByText('Réinitialiser le mot de passe'));
+    await fireEvent.changeText(screen.getByTestId('forgot-password-email'), 'user@example.com');
+    await fireEvent.press(screen.getByText('Réinitialiser le mot de passe'));
 
     expect(await screen.findByTestId('forgot-password-confirmation')).toBeTruthy();
   });
 
   it('shows the mapped error message when resetPassword rejects', async () => {
     resetPassword.mockRejectedValue(new Error('Aucun compte ne correspond à cette adresse email'));
-    renderScreen();
+    await renderScreen();
 
-    fireEvent.changeText(screen.getByTestId('forgot-password-email'), 'missing@example.com');
-    fireEvent.press(screen.getByText('Réinitialiser le mot de passe'));
+    await fireEvent.changeText(screen.getByTestId('forgot-password-email'), 'missing@example.com');
+    await fireEvent.press(screen.getByText('Réinitialiser le mot de passe'));
 
     expect(await screen.findByText('Aucun compte ne correspond à cette adresse email')).toBeTruthy();
   });

@@ -20,7 +20,7 @@ import { addToHistory, getHistory } from '../../services/db';
 
 const Stack = createNativeStackNavigator();
 
-function renderSearch() {
+async function renderSearch() {
   return render(
     <NavigationContainer>
       <Stack.Navigator>
@@ -41,10 +41,10 @@ describe('SearchScreen', () => {
   });
 
   it('shows a validation error and does not search for an empty city', async () => {
-    renderSearch();
+    await renderSearch();
     await waitFor(() => expect(getHistory).toHaveBeenCalled());
 
-    fireEvent.press(screen.getByText('Rechercher'));
+    await fireEvent.press(screen.getByText('Rechercher'));
 
     expect(await screen.findByText('Le nom de ville est requis')).toBeTruthy();
     expect(searchCity).not.toHaveBeenCalled();
@@ -58,11 +58,11 @@ describe('SearchScreen', () => {
       temperatureCelsius: 21,
       condition: 'ciel dégagé',
     });
-    renderSearch();
+    await renderSearch();
     await waitFor(() => expect(getHistory).toHaveBeenCalled());
 
-    fireEvent.changeText(screen.getByTestId('search-city-input'), 'Paris');
-    fireEvent.press(screen.getByText('Rechercher'));
+    await fireEvent.changeText(screen.getByTestId('search-city-input'), 'Paris');
+    await fireEvent.press(screen.getByText('Rechercher'));
 
     expect(await screen.findByText('Paris')).toBeTruthy();
     await waitFor(() => expect(addToHistory).toHaveBeenCalledWith('Paris', 'FR', expect.any(String)));
@@ -70,11 +70,11 @@ describe('SearchScreen', () => {
 
   it('shows an error message when the city is not found', async () => {
     (searchCity as jest.Mock).mockRejectedValue(new Error('Ville introuvable : Zzzzz'));
-    renderSearch();
+    await renderSearch();
     await waitFor(() => expect(getHistory).toHaveBeenCalled());
 
-    fireEvent.changeText(screen.getByTestId('search-city-input'), 'Zzzzz');
-    fireEvent.press(screen.getByText('Rechercher'));
+    await fireEvent.changeText(screen.getByTestId('search-city-input'), 'Zzzzz');
+    await fireEvent.press(screen.getByText('Rechercher'));
 
     expect(await screen.findByText('Ville introuvable : Zzzzz')).toBeTruthy();
   });

@@ -1,6 +1,7 @@
 jest.mock('../../services/weatherService', () => ({
   getWeatherDetails: jest.fn(),
   getWeatherDetailsByCoords: jest.fn(),
+  getForecast: jest.fn(),
 }));
 
 jest.mock('../../services/db', () => ({
@@ -15,24 +16,31 @@ import { render, screen, waitFor } from '@testing-library/react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { DashboardScreen } from '../DashboardScreen';
-import { getWeatherDetails, getWeatherDetailsByCoords } from '../../services/weatherService';
+import { getWeatherDetails, getWeatherDetailsByCoords, getForecast } from '../../services/weatherService';
 import { getFavorites } from '../../services/db';
 import { getCurrentCoordinates } from '../../services/locationService';
+import { ThemeProvider } from '../../context/ThemeContext';
 
 const Stack = createNativeStackNavigator();
 
-function renderDashboard() {
+async function renderDashboard() {
   return render(
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="DashboardHome" component={DashboardScreen} />
-        <Stack.Screen name="WeatherDetail" component={() => null} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <ThemeProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="DashboardHome" component={DashboardScreen} />
+          <Stack.Screen name="WeatherDetail" component={() => null} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ThemeProvider>
   );
 }
 
 describe('DashboardScreen', () => {
+  beforeEach(() => {
+    (getForecast as jest.Mock).mockResolvedValue([]);
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -50,7 +58,7 @@ describe('DashboardScreen', () => {
       windSpeedKmh: 10,
     });
 
-    renderDashboard();
+    await renderDashboard();
 
     expect(await screen.findByText('Paris')).toBeTruthy();
     expect(screen.getByText('21°C')).toBeTruthy();
@@ -70,7 +78,7 @@ describe('DashboardScreen', () => {
       windSpeedKmh: 12,
     });
 
-    renderDashboard();
+    await renderDashboard();
 
     expect(await screen.findByText('24°C')).toBeTruthy();
     expect(getWeatherDetailsByCoords).toHaveBeenCalledWith(48.85, 2.35);
@@ -91,7 +99,7 @@ describe('DashboardScreen', () => {
       windSpeedKmh: 8,
     });
 
-    renderDashboard();
+    await renderDashboard();
 
     await waitFor(() => expect(getWeatherDetails).toHaveBeenCalledWith('Lyon'));
     expect(await screen.findByText('Lyon')).toBeTruthy();
@@ -102,7 +110,7 @@ describe('DashboardScreen', () => {
     (getCurrentCoordinates as jest.Mock).mockResolvedValue(null);
     (getWeatherDetails as jest.Mock).mockRejectedValue(new Error('Problème de connexion réseau, veuillez réessayer'));
 
-    renderDashboard();
+    await renderDashboard();
 
     expect(await screen.findByText('Problème de connexion réseau, veuillez réessayer')).toBeTruthy();
     expect(screen.getByText('Réessayer')).toBeTruthy();

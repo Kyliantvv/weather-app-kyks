@@ -26,7 +26,7 @@ describe('ThemeContext', () => {
   it('defaults to light mode when nothing is stored', async () => {
     (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
 
-    render(
+    await render(
       <ThemeProvider>
         <Probe />
       </ThemeProvider>
@@ -38,7 +38,7 @@ describe('ThemeContext', () => {
   it('restores dark mode from storage', async () => {
     (AsyncStorage.getItem as jest.Mock).mockResolvedValue('dark');
 
-    render(
+    await render(
       <ThemeProvider>
         <Probe />
       </ThemeProvider>
@@ -50,14 +50,14 @@ describe('ThemeContext', () => {
   it('toggles and persists the new preference', async () => {
     (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
 
-    render(
+    await render(
       <ThemeProvider>
         <Probe />
       </ThemeProvider>
     );
 
     await waitFor(() => expect(screen.getByText('light')).toBeTruthy());
-    fireEvent.press(screen.getByText('toggle'));
+    await fireEvent.press(screen.getByText('toggle'));
 
     await waitFor(() => expect(screen.getByText('dark')).toBeTruthy());
     expect(AsyncStorage.setItem).toHaveBeenCalledWith('theme-preference', 'dark');

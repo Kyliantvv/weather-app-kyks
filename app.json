@@ -26,7 +26,8 @@
         {
           "locationWhenInUsePermission": "Cette application utilise votre position pour afficher la météo de votre ville actuelle."
         }
-      ]
+      ],
+      "expo-font"
     ]
   }
 }

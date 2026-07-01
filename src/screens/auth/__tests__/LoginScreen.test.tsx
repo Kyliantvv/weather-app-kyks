@@ -10,7 +10,7 @@ import { useAuth } from '../../../context/AuthContext';
 
 const Stack = createNativeStackNavigator();
 
-function renderLoginScreen() {
+async function renderLoginScreen() {
   return render(
     <NavigationContainer>
       <Stack.Navigator>
@@ -34,11 +34,11 @@ describe('LoginScreen', () => {
   });
 
   it('shows a validation error and does not call signIn for an invalid email', async () => {
-    renderLoginScreen();
+    await renderLoginScreen();
 
-    fireEvent.changeText(screen.getByTestId('login-email'), 'not-an-email');
-    fireEvent.changeText(screen.getByTestId('login-password'), 'somepassword');
-    fireEvent.press(screen.getByText('Se connecter'));
+    await fireEvent.changeText(screen.getByTestId('login-email'), 'not-an-email');
+    await fireEvent.changeText(screen.getByTestId('login-password'), 'somepassword');
+    await fireEvent.press(screen.getByText('Se connecter'));
 
     expect(await screen.findByText("L'adresse email n'est pas valide")).toBeTruthy();
     expect(signIn).not.toHaveBeenCalled();
@@ -46,22 +46,22 @@ describe('LoginScreen', () => {
 
   it('calls signIn with the validated credentials', async () => {
     signIn.mockResolvedValue(undefined);
-    renderLoginScreen();
+    await renderLoginScreen();
 
-    fireEvent.changeText(screen.getByTestId('login-email'), 'user@example.com');
-    fireEvent.changeText(screen.getByTestId('login-password'), 'somepassword');
-    fireEvent.press(screen.getByText('Se connecter'));
+    await fireEvent.changeText(screen.getByTestId('login-email'), 'user@example.com');
+    await fireEvent.changeText(screen.getByTestId('login-password'), 'somepassword');
+    await fireEvent.press(screen.getByText('Se connecter'));
 
     await waitFor(() => expect(signIn).toHaveBeenCalledWith('user@example.com', 'somepassword'));
   });
 
   it('shows the mapped error message when signIn rejects', async () => {
     signIn.mockRejectedValue(new Error('Email ou mot de passe incorrect'));
-    renderLoginScreen();
+    await renderLoginScreen();
 
-    fireEvent.changeText(screen.getByTestId('login-email'), 'user@example.com');
-    fireEvent.changeText(screen.getByTestId('login-password'), 'wrong');
-    fireEvent.press(screen.getByText('Se connecter'));
+    await fireEvent.changeText(screen.getByTestId('login-email'), 'user@example.com');
+    await fireEvent.changeText(screen.getByTestId('login-password'), 'wrong');
+    await fireEvent.press(screen.getByText('Se connecter'));
 
     expect(await screen.findByText('Email ou mot de passe incorrect')).toBeTruthy();
   });

@@ -53,10 +53,10 @@ import { RootNavigator } from '../RootNavigator';
 import { useAuth } from '../../context/AuthContext';
 
 describe('RootNavigator', () => {
-  it('shows the auth stack when there is no user', () => {
+  it('shows the auth stack when there is no user', async () => {
     (useAuth as jest.Mock).mockReturnValue({ user: null, isLoading: false });
 
-    render(
+    await render(
       <NavigationContainer>
         <RootNavigator />
       </NavigationContainer>
@@ -65,10 +65,10 @@ describe('RootNavigator', () => {
     expect(screen.getByText('Connexion')).toBeTruthy();
   });
 
-  it('shows the app tabs when a user is present', () => {
+  it('shows the app tabs when a user is present', async () => {
     (useAuth as jest.Mock).mockReturnValue({ user: { uid: '1' }, isLoading: false });
 
-    render(
+    await render(
       <NavigationContainer>
         <RootNavigator />
       </NavigationContainer>
@@ -77,10 +77,10 @@ describe('RootNavigator', () => {
     expect(screen.getByText('Dashboard')).toBeTruthy();
   });
 
-  it('shows a loading indicator while the auth state resolves', () => {
+  it('shows a loading indicator while the auth state resolves', async () => {
     (useAuth as jest.Mock).mockReturnValue({ user: null, isLoading: true });
 
-    render(
+    await render(
       <NavigationContainer>
         <RootNavigator />
       </NavigationContainer>

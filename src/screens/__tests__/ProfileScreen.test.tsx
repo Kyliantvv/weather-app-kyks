@@ -16,30 +16,30 @@ describe('ProfileScreen', () => {
     (useThemeMode as jest.Mock).mockReturnValue({ isDarkMode: false, toggleDarkMode: jest.fn() });
   });
 
-  it('shows the authenticated user email', () => {
+  it('shows the authenticated user email', async () => {
     (useAuth as jest.Mock).mockReturnValue({ user: { uid: '1', email: 'user@example.com' }, signOut: jest.fn() });
 
-    render(<ProfileScreen />);
+    await render(<ProfileScreen />);
 
     expect(screen.getByTestId('profile-email').props.children).toBe('user@example.com');
   });
 
-  it('calls signOut when the logout button is pressed', () => {
+  it('calls signOut when the logout button is pressed', async () => {
     const signOut = jest.fn();
     (useAuth as jest.Mock).mockReturnValue({ user: { uid: '1', email: 'user@example.com' }, signOut });
 
-    render(<ProfileScreen />);
-    fireEvent.press(screen.getByText('Se déconnecter'));
+    await render(<ProfileScreen />);
+    await fireEvent.press(screen.getByText('Se déconnecter'));
 
     expect(signOut).toHaveBeenCalled();
   });
 
-  it('toggles dark mode when the switch is pressed', () => {
+  it('toggles dark mode when the switch is pressed', async () => {
     const toggleDarkMode = jest.fn();
     (useAuth as jest.Mock).mockReturnValue({ user: { uid: '1', email: 'user@example.com' }, signOut: jest.fn() });
     (useThemeMode as jest.Mock).mockReturnValue({ isDarkMode: false, toggleDarkMode });
 
-    render(<ProfileScreen />);
+    await render(<ProfileScreen />);
     fireEvent(screen.getByTestId('dark-mode-switch'), 'valueChange', true);
 
     expect(toggleDarkMode).toHaveBeenCalled();

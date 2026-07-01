@@ -23,7 +23,7 @@ describe('AuthContext', () => {
       return jest.fn();
     });
 
-    render(
+    await render(
       <AuthProvider>
         <Probe />
       </AuthProvider>
@@ -38,7 +38,7 @@ describe('AuthContext', () => {
       return jest.fn();
     });
 
-    render(
+    await render(
       <AuthProvider>
         <Probe />
       </AuthProvider>

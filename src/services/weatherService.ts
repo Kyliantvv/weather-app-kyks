@@ -27,6 +27,12 @@ export interface WeatherSummary {
 export interface WeatherDetails extends WeatherSummary {
   humidityPercent: number;
   windSpeedKmh: number;
+  feelsLikeCelsius?: number;
+  pressureHpa?: number;
+  visibilityKm?: number;
+  cloudsPercent?: number;
+  sunrise?: number;
+  sunset?: number;
 }
 
 export interface ForecastEntry {
@@ -71,6 +77,20 @@ function toSummary(data: any): WeatherSummary {
   };
 }
 
+function toDetails(data: any): WeatherDetails {
+  return {
+    ...toSummary(data),
+    humidityPercent: data.main.humidity,
+    windSpeedKmh: msToKmh(data.wind.speed),
+    feelsLikeCelsius: data.main.feels_like != null ? kelvinToCelsius(data.main.feels_like) : undefined,
+    pressureHpa: data.main.pressure,
+    visibilityKm: data.visibility != null ? Math.round(data.visibility / 100) / 10 : undefined,
+    cloudsPercent: data.clouds?.all,
+    sunrise: data.sys?.sunrise != null ? data.sys.sunrise * 1000 : undefined,
+    sunset: data.sys?.sunset != null ? data.sys.sunset * 1000 : undefined,
+  };
+}
+
 export async function searchCity(city: string): Promise<WeatherSummary> {
   const data = await fetchWeather(`q=${encodeURIComponent(city)}`, city);
   return toSummary(data);
@@ -78,11 +98,7 @@ export async function searchCity(city: string): Promise<WeatherSummary> {
 
 export async function getWeatherDetails(city: string): Promise<WeatherDetails> {
   const data = await fetchWeather(`q=${encodeURIComponent(city)}`, city);
-  return {
-    ...toSummary(data),
-    humidityPercent: data.main.humidity,
-    windSpeedKmh: msToKmh(data.wind.speed),
-  };
+  return toDetails(data);
 }
 
 export async function getWeatherByCoords(latitude: number, longitude: number): Promise<WeatherSummary> {
@@ -92,11 +108,7 @@ export async function getWeatherByCoords(latitude: number, longitude: number): P
 
 export async function getWeatherDetailsByCoords(latitude: number, longitude: number): Promise<WeatherDetails> {
   const data = await fetchWeather(`lat=${latitude}&lon=${longitude}`, 'position actuelle');
-  return {
-    ...toSummary(data),
-    humidityPercent: data.main.humidity,
-    windSpeedKmh: msToKmh(data.wind.speed),
-  };
+  return toDetails(data);
 }
 
 export async function getForecast(city: string): Promise<ForecastEntry[]> {
